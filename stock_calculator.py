@@ -10,7 +10,6 @@ class StockRate:
 
 def custom_format(data):
     """小数点后2位取整"""
-    # return int(data * f) / f
     return float(format(data, '.2f'))
 
 
