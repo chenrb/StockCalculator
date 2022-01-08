@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+
 class StockRate:
     def __init__(self, commission_rate) -> None:
         self.commission_rate = commission_rate
@@ -7,9 +8,10 @@ class StockRate:
         self.transfer_rate = 0.00002
 
 
-def custom_format(data, f=100):
+def custom_format(data):
     """小数点后2位取整"""
-    return int(data * f) / f
+    # return int(data * f) / f
+    return float(format(data, '.2f'))
 
 
 class BuyCalculator:
@@ -54,6 +56,7 @@ class SaleCalculator:
         (
             self.sales_amount,
             self.commission,
+            self.stamp_duty,
             self.transfer_fee,
             self.net_sales_amount,
         ) = self.calculate(self.rate, self.price, self.num)
@@ -70,4 +73,10 @@ class SaleCalculator:
         stamp_duty = sales_amount * rate.stamp_duty_rate
         transfer_fee = sales_amount * rate.transfer_rate
         net_sales_amount = sales_amount - commission - stamp_duty - transfer_fee
-        return sales_amount, commission, transfer_fee, net_sales_amount
+        return (
+            custom_format(sales_amount),
+            custom_format(commission),
+            custom_format(stamp_duty),
+            custom_format(transfer_fee),
+            custom_format(net_sales_amount),
+        )

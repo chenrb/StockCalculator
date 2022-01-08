@@ -2,7 +2,7 @@
 
 import pytest
 
-from stock_calculator import BuyCalculator, StockRate
+from stock_calculator import BuyCalculator, StockRate, SaleCalculator
 
 
 def test_buy():
@@ -16,3 +16,13 @@ def test_buy():
     buy_2 = BuyCalculator(rate, 10, 100)
     assert buy_2.cost == 1000
     assert buy_2.commission == 5
+
+
+def test_sale():
+    rate = StockRate(0.00025)
+    sale_1 = SaleCalculator(rate, 3.29, 7100)
+    assert sale_1.sales_amount == 23359.00
+    assert sale_1.commission == 5.84
+    assert sale_1.stamp_duty == 23.36
+    assert sale_1.transfer_fee == 0.47
+    assert sale_1.net_sales_amount == 23329.33
