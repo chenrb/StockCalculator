@@ -2,15 +2,17 @@
 
 
 class StockRate:
-    def __init__(self, commission_rate) -> None:
+    def __init__(
+        self, commission_rate, stamp_duty_rate=0.001, transfer_rate=0.00002
+    ) -> None:
         self.commission_rate = commission_rate
-        self.stamp_duty_rate = 0.001
-        self.transfer_rate = 0.00002
+        self.stamp_duty_rate = stamp_duty_rate
+        self.transfer_rate = transfer_rate
 
 
 def custom_format(data):
     """小数点后2位取整"""
-    return float(format(data, '.2f'))
+    return float(format(data, ".2f"))
 
 
 class BuyCalculator:
@@ -19,32 +21,31 @@ class BuyCalculator:
         self.price = price
         self.num = num
         (
-            self.cost,
+            self.transaction_amount,
             self.commission,
             self.transfer_fee,
-            self.total,
+            self.amount_incurred,
             self.break_even_price,
         ) = self.calculate(self.rate, self.price, self.num)
 
     @staticmethod
     def calculate(rate, price, num):
         """
-        根据费率、买入单价、数量计算：买入金额，佣金，过户费，总费用，保本单价
+        price: 成交均价
+        num: 成交数量
+        transaction_amount: 成交金额
+        amount_incurred: 发生金额
+        commission: 手续费
+        transfer_fee: 过户费
         """
-        cost = price * num
-        commission = cost * rate.commission_rate
+        transaction_amount = custom_format(price * num)
+        commission = custom_format(transaction_amount * rate.commission_rate)
         if commission < 5:
             commission = 5
-        transfer_fee = cost * rate.transfer_rate
-        total = cost + commission + transfer_fee
-        break_even_price = total / num
-        return (
-            custom_format(cost),
-            custom_format(commission),
-            custom_format(transfer_fee),
-            custom_format(total),
-            custom_format(break_even_price),
-        )
+        transfer_fee = custom_format(transaction_amount * rate.transfer_rate)
+        amount_incurred = custom_format(transaction_amount + commission + transfer_fee)
+        break_even_price = custom_format(amount_incurred / num)
+        return transaction_amount, commission, transfer_fee, amount_incurred, break_even_price
 
 
 class SaleCalculator:
@@ -53,29 +54,31 @@ class SaleCalculator:
         self.price = price
         self.num = num
         (
-            self.sales_amount,
+            self.transaction_amount,
             self.commission,
             self.stamp_duty,
             self.transfer_fee,
-            self.net_sales_amount,
+            self.amount_incurred,
         ) = self.calculate(self.rate, self.price, self.num)
 
     @staticmethod
     def calculate(rate, price, num):
         """
-        根据费率、卖出单价、数量计算：卖出金额，佣金，印花税，过户费，卖出净金额
+        price: 成交均价
+        num: 成交数量
+        transaction_amount: 成交金额
+        amount_incurred: 发生金额
+        commission: 手续费
+        stamp_duty: 印花税
+        transfer_fee: 过户费
         """
-        sales_amount = price * num
-        commission = sales_amount * rate.commission_rate
+        transaction_amount = custom_format(price * num)
+        commission = custom_format(transaction_amount * rate.commission_rate)
         if commission < 5:
             commission = 5
-        stamp_duty = sales_amount * rate.stamp_duty_rate
-        transfer_fee = sales_amount * rate.transfer_rate
-        net_sales_amount = sales_amount - commission - stamp_duty - transfer_fee
-        return (
-            custom_format(sales_amount),
-            custom_format(commission),
-            custom_format(stamp_duty),
-            custom_format(transfer_fee),
-            custom_format(net_sales_amount),
+        stamp_duty = custom_format(transaction_amount * rate.stamp_duty_rate)
+        transfer_fee = custom_format(transaction_amount * rate.transfer_rate)
+        amount_incurred = custom_format(
+            transaction_amount - commission - stamp_duty - transfer_fee
         )
+        return transaction_amount, commission, stamp_duty, transfer_fee, amount_incurred
