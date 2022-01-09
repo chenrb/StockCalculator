@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
 
-import pytest
-
 from stock_calculator import BuyCalculator, StockRate, SaleCalculator, Deal
 
 
@@ -12,7 +10,6 @@ def test_buy():
     assert buy_1.commission == 7.43
     assert buy_1.transfer_fee == 0.59
     assert buy_1.amount_incurred == 29730.02
-    assert buy_1.break_even_price == 297.30
     buy_2 = BuyCalculator(rate, 10, 100)
     assert buy_2.transaction_amount == 1000
     assert buy_2.commission == 5
