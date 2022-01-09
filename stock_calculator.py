@@ -15,17 +15,21 @@ def custom_format(data):
     return float(format(data, ".2f"))
 
 
-class BuyCalculator:
+class BaseModel:
     def __init__(self, rate, price, num) -> None:
         self.rate = rate
         self.price = price
         self.num = num
+
+
+class BuyCalculator(BaseModel):
+    def __init__(self, rate, price, num) -> None:
+        super().__init__(rate, price, num)
         (
             self.transaction_amount,
             self.commission,
             self.transfer_fee,
             self.amount_incurred,
-            self.break_even_price,
         ) = self.calculate(self.rate, self.price, self.num)
 
     @staticmethod
@@ -44,15 +48,12 @@ class BuyCalculator:
             commission = 5
         transfer_fee = custom_format(transaction_amount * rate.transfer_rate)
         amount_incurred = custom_format(transaction_amount + commission + transfer_fee)
-        break_even_price = custom_format(amount_incurred / num)
-        return transaction_amount, commission, transfer_fee, amount_incurred, break_even_price
+        return transaction_amount, commission, transfer_fee, amount_incurred
 
 
-class SaleCalculator:
+class SaleCalculator(BaseModel):
     def __init__(self, rate, price, num) -> None:
-        self.rate = rate
-        self.price = price
-        self.num = num
+        super().__init__(rate, price, num)
         (
             self.transaction_amount,
             self.commission,
@@ -82,3 +83,46 @@ class SaleCalculator:
             transaction_amount - commission - stamp_duty - transfer_fee
         )
         return transaction_amount, commission, stamp_duty, transfer_fee, amount_incurred
+
+
+class Deal:
+    """
+    暂定做T买入卖出数量相同
+    """
+
+    def __init__(self, rate, buy_price, sale_price, num) -> None:
+        self.rate = rate
+        self.buy_price = buy_price
+        self.sale_price = sale_price
+        self.num = num
+        (
+            self.profit,
+            self.commission,
+            self.stamp_duty,
+            self.transfer_fee,
+            self.cost,
+            self.break_even_price,
+        ) = self.calculate(self.rate, self.buy_price, self.sale_price, self.num)
+
+    @staticmethod
+    def calculate(rate, buy_price, sale_price, num):
+        """
+        price: 成交均价
+        num: 成交数量
+        transaction_amount: 成交金额
+        amount_incurred: 发生金额
+        commission: 手续费
+        stamp_duty: 印花税
+        transfer_fee: 过户费
+        cost: commission + stamp_duty + transfer_fee]
+        break_even_price: 保本单价
+        """
+        buy = BuyCalculator(rate, buy_price, num)
+        sale = SaleCalculator(rate, sale_price, num)
+        profit = sale.amount_incurred - buy.amount_incurred
+        commission = sale.commission + buy.commission
+        stamp_duty = sale.stamp_duty
+        transfer_fee = sale.transfer_fee + buy.transfer_fee
+        cost = commission + stamp_duty + transfer_fee
+        break_even_price = custom_format(cost / num) + buy_price
+        return profit, commission, stamp_duty, transfer_fee, cost, break_even_price

@@ -2,7 +2,7 @@
 
 import pytest
 
-from stock_calculator import BuyCalculator, StockRate, SaleCalculator
+from stock_calculator import BuyCalculator, StockRate, SaleCalculator, Deal
 
 
 def test_buy():
@@ -30,11 +30,12 @@ def test_sale():
 
 def test_deal():
     rate = StockRate(0.00025)
+    deal = Deal(rate, 37.18, 37.69, 600)
     buy_1 = BuyCalculator(rate, 37.18, 600)
     assert buy_1.transaction_amount == 22308
     sale_1 = SaleCalculator(rate, 37.69, 600)
     assert sale_1.transaction_amount == 22614
-    assert buy_1.commission + sale_1.commission == 5.58 + 5.65
-    assert sale_1.stamp_duty == 22.61
-    assert buy_1.transfer_fee + sale_1.transfer_fee == 0.45 + 0.45
-    assert sale_1.amount_incurred - buy_1.amount_incurred == 22585.29 - 22314.03
+    assert deal.commission == 5.58 + 5.65
+    assert deal.stamp_duty == 22.61
+    assert deal.transfer_fee == 0.45 + 0.45
+    assert deal.profit == 22585.29 - 22314.03
