@@ -2,9 +2,7 @@
 
 
 class StockRate:
-    def __init__(
-        self, commission_rate, stamp_duty_rate=0.001, transfer_rate=0.00002
-    ) -> None:
+    def __init__(self, commission_rate, stamp_duty_rate=0.001, transfer_rate=0.00002) -> None:
         self.commission_rate = commission_rate
         self.stamp_duty_rate = stamp_duty_rate
         self.transfer_rate = transfer_rate
