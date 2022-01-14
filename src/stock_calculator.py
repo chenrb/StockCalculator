@@ -95,6 +95,7 @@ class Deal:
         self.num = num
         (
             self.profit,
+            self.rise,
             self.commission,
             self.stamp_duty,
             self.transfer_fee,
@@ -105,22 +106,21 @@ class Deal:
     @staticmethod
     def calculate(rate, buy_price, sale_price, num):
         """
-        price: 成交均价
-        num: 成交数量
-        transaction_amount: 成交金额
-        amount_incurred: 发生金额
+        profit: 利润
+        rise: 涨幅
         commission: 手续费
         stamp_duty: 印花税
         transfer_fee: 过户费
-        cost: commission + stamp_duty + transfer_fee]
+        cost: commission + stamp_duty + transfer_fee
         break_even_price: 保本单价
         """
         buy = BuyCalculator(rate, buy_price, num)
         sale = SaleCalculator(rate, sale_price, num)
-        profit = sale.amount_incurred - buy.amount_incurred
+        rise = custom_format((sale_price - buy_price) / buy_price * 100)
+        profit = custom_format(sale.amount_incurred - buy.amount_incurred)
         commission = sale.commission + buy.commission
         stamp_duty = sale.stamp_duty
         transfer_fee = sale.transfer_fee + buy.transfer_fee
-        cost = commission + stamp_duty + transfer_fee
+        cost = custom_format(commission + stamp_duty + transfer_fee)
         break_even_price = custom_format(cost / num) + buy_price
-        return profit, commission, stamp_duty, transfer_fee, cost, break_even_price
+        return profit, rise, commission, stamp_duty, transfer_fee, cost, break_even_price
